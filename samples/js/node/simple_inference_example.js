@@ -30,6 +30,7 @@ async function onRuntimeInitialized()
     const output = model.infer(tensor);
 
     //show the results
+    // FIXME: replace mjs usage to json
     const { default: imagenetClassesMap } = await import('../assets/imagenet_classes_map.mjs');
     console.log("Result: " + imagenetClassesMap[math.argMax(output.data)]);
     console.log(math.argMax(output.data));

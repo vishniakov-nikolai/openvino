@@ -21,6 +21,7 @@ async function create_tensor(img_path) {
 
 async function onRuntimeInitialized()
 {
+    // FIXME: replace mjs usage to json
     const { default: imagenetClassesMap } = await import('../assets/imagenet_classes_map.mjs');
     const img_path = process.argv[2] || '../assets/images/shih_tzu.jpg';
     const model_path = '../assets/models/v3-small_224_1.0_float.xml';
