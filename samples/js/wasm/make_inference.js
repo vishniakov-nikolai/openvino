@@ -1,4 +1,4 @@
-async function makeInference({ modelPath, imgPath, shape, layout }, events = {}) {
+async function makeInference({ modelPath, imgPath, shape, layout, isNCHW }, events = {}) {
   const ov = await openvino.init(); 
   const { Tensor, loadModel } = ov; 
 
@@ -18,7 +18,9 @@ async function makeInference({ modelPath, imgPath, shape, layout }, events = {})
   const model = await loadModel(modelPath.xml, modelPath.bin, shape, layout);
 
   events.onInferenceRunning(model);
-  const inputTensor = await getArrayByImgPath(imgPath);
+  let inputTensor = await getArrayByImgPath(imgPath);
+
+  if (isNCHW) inputTensor = convertNHWCtoNCHW(inputTensor);
 
   const outputTensor = await model.infer(inputTensor, shape);
 
@@ -83,4 +85,16 @@ function createCanvas(width, height) {
   canvasElement.height = height;
 
   return canvasElement;
+}
+
+function convertNHWCtoNCHW(inputData) {
+  const reordered = [];
+
+  for (let j = 0; j < 3; j++) {
+    for (let i = 0; i < inputData.length; i=i+3) {
+      reordered.push(inputData[i + j]);
+    }
+  }
+
+  return reordered;
 }

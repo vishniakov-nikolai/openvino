@@ -23,9 +23,18 @@ const inferenceParametersFaceDetection = {
   imgPath: './assets/images/peopleAndCake256x256.jpg',
   shape: [1, 3, 256, 256],
   layout: 'NCHW',
+  isNCHW: true,
 };
 
-makeInference(inferenceParametersMobilenetV3, events);
+const inferenceParametersRoadSegmentation = { 
+  modelPath: getModelPaths('road-segmentation-adas/road-segmentation-adas-0001'),
+  imgPath: './assets/images/detroitStreet896x512.png',
+  shape: [1, 3, 512, 896],
+  layout: 'NCHW',
+  isNCHW: true,
+};
+
+makeInference(inferenceParametersRoadSegmentation, events);
 
 function setStatus(txt) {
   return () => statusElement.innerText = txt;
