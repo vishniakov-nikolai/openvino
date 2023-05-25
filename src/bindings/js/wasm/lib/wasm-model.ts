@@ -3,7 +3,6 @@ import { Tensor, Shape, TypedArray } from 'openvinojs-common';
 import {
   getFileDataAsArray,
   uploadFile,
-  convertShape,
   convertTensor,
   parseOriginalTensor,
 } from './helpers';
@@ -48,8 +47,8 @@ class WASMModel implements IModel {
   }
 }
 
-export default async function loadModel(xmlPath: string, binPath: string,
-  shapeData: Shape | number[], layout: string): Promise<IModel> {
+export default async function loadModel(xmlPath: string, binPath: string)
+: Promise<IModel> {
   if (typeof xmlPath !== 'string' || typeof binPath !== 'string')
     throw new Error('Parameters \'xmlPath\' and \'binPath\' should be string');
 
@@ -67,13 +66,7 @@ export default async function loadModel(xmlPath: string, binPath: string,
   uploadFile(ov, xmlFilename, xmlData);
   uploadFile(ov, binFilename, binData);
 
-  const shape = shapeData instanceof Shape
-    ? shapeData
-    : new Shape(...shapeData as number[]);
-  const originalShape = convertShape(ov, shape);
-
-  const originalModel = new ov.Session(xmlFilename, binFilename,
-    originalShape.obj, layout);
+  const originalModel = new ov.Session(xmlFilename, binFilename, null, '', '');
 
   return new WASMModel(ov, originalModel);
 }

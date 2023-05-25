@@ -63,34 +63,39 @@ export interface ModelNameAndPath {
   modelName: string;
 }
 
+type InputShape = {
+  shapeData: Shape | number[],
+  layout: string,
+};
+
+export type ModelOptions = {
+  inputShape?: InputShape,
+  inputPrecision?: PrecisionSupportedType,
+}
+
 export type LoadModelExternalType = {
   (
     path: string,
-    shapeData: Shape | number[],
-    layout: string
+    options?: ModelOptions,
   ): Promise<IModel>,
   (
     filesPaths: ModelFiles,
-    shapeData: Shape | number[],
-    layout: string
+    options?: ModelOptions,
   ): Promise<IModel>,
   (
     searchData: ModelNameAndPath,
-    shapeData: Shape | number[],
-    layout: string
+    options?: ModelOptions,
   ): Promise<IModel>,
   (
     arg: ModelFiles | ModelNameAndPath | string,
-    shapeData: Shape | number[],
-    layout: string
+    options?: ModelOptions,
   ): Promise<IModel>,
 };
 
 export type LoadModelInternalType = (
   xmlPath: string,
   binPath: string,
-  shapeData: Shape | number[],
-  layout: string
+  options?: ModelOptions,
 ) => Promise<IModel>;
 
 export interface IOpenVINOJSLibrary {

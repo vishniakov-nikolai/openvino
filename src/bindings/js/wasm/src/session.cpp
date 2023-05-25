@@ -22,19 +22,10 @@ std::shared_ptr<ov::Model> loadModel(std::string xml_path, std::string bin_path)
     }
 }
 
-ov::CompiledModel compileModel(std::shared_ptr<ov::Model> model, ov::Shape shape, std::string layout) {
-    ov::Layout tensor_layout = ov::Layout(layout);
-
+ov::CompiledModel compileModel(std::shared_ptr<ov::Model> model) {
     ov::Core core;
     std::cout << "== Model name: " << model->get_friendly_name() << std::endl;
 
-    ov::element::Type input_type = ov::element::u8;
-    ov::preprocess::PrePostProcessor ppp(model);
-    ppp.input().tensor().set_shape(shape).set_element_type(input_type).set_layout(tensor_layout);
-    ppp.input().preprocess().resize(ov::preprocess::ResizeAlgorithm::RESIZE_LINEAR);
-    ppp.output().tensor().set_element_type(ov::element::f32);
-    ppp.input().model().set_layout(tensor_layout);
-    ppp.build();
     ov::CompiledModel compiled_model;
     const std::string backend = "TEMPLATE";
     try {
@@ -55,10 +46,10 @@ ov::Tensor performInference(ov::CompiledModel cm, ov::Tensor t) {
     return infer_request.get_output_tensor();
 }
 
-Session::Session(std::string xml_path, std::string bin_path, ShapeLite* shape, std::string layout) {
+Session::Session(std::string xml_path, std::string bin_path, ShapeLite* shape, std::string layout, std::string input_type) {
     auto model = loadModel(xml_path, bin_path);
     try {
-        this->model = compileModel(model, shape->get_original(), layout);
+        this->model = compileModel(model);
     } catch (const std::exception& e) {
         std::cout << "== Error in Session constructor: " << e.what() << std::endl;
         throw e;

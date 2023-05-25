@@ -9,6 +9,7 @@ import {
   IModel,
   ModelFiles,
   ModelNameAndPath,
+  ModelOptions,
 } from './types';
 
 const modules: { [label: string]: IOpenVINOJSLibrary } = {};
@@ -40,8 +41,7 @@ function adaptLoadModelSignature(loadModel: LoadModelInternalType)
 : LoadModelExternalType {
   return async (
     arg: ModelFiles | ModelNameAndPath | string,
-    shapeData: Shape | number[],
-    layout: string
+    options: ModelOptions,
   ): Promise<IModel> => {
     let filesPaths: ModelFiles;
 
@@ -64,6 +64,6 @@ function adaptLoadModelSignature(loadModel: LoadModelInternalType)
     }
     else filesPaths = arg as ModelFiles;
 
-    return loadModel(filesPaths.xml, filesPaths.bin, shapeData, layout);
+    return loadModel(filesPaths.xml, filesPaths.bin, options);
   };
 }

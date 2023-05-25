@@ -94,3 +94,13 @@ function getMaxElement(arr) {
 
   return { value: max, index: maxIndex };
 }
+
+export function nhwc2ncwh(imgArray) {
+  const newArray = [];
+
+  for (let j = 0; j < 3; j++)
+    for (let i = j; i < imgArray.length; i += 3)
+      newArray.push(imgArray[i]);
+
+  return newArray;
+}

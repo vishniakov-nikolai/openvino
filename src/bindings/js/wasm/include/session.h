@@ -14,6 +14,6 @@ class Session {
     private:
         ov::CompiledModel model;
     public:
-        Session(std::string xml_path, std::string bin_path, ShapeLite* shape, std::string layout);
+        Session(std::string xml_path, std::string bin_path, ShapeLite* shape, std::string layout, std::string input_type);
         TensorLite infer(TensorLite* tensor);
 };

@@ -16,20 +16,13 @@ const WAITING_INPUT_STATUS_TXT =
 run();
 
 async function run() {
-  const { Shape, loadModel } = openvinojs;
+  const { Tensor, Shape, loadModel } = openvinojs;
 
   statusElement.innerText =
     'OpenVINO successfully initialized. Model loading...';
 
   const shape = new Shape(1, WIDTH, HEIGHT, 3);
-  const model = await loadModel(
-    {
-      path: MODEL_PATH,
-      modelName: MODEL_NAME,
-    },
-    shape,
-    'NHWC',
-  );
+  const model = await loadModel({ path: MODEL_PATH, modelName: MODEL_NAME });
 
   statusElement.innerText = WAITING_INPUT_STATUS_TXT;
   panelElement.classList.remove('hide');
@@ -56,9 +49,10 @@ async function run() {
       ctx.drawImage(img, 0, 0, WIDTH, HEIGHT);
 
       statusElement.innerText = 'Inference is in the progress, please wait...';
-      const imgTensor = getImgTensor(ctx);
+      const imgArray = getImgArray(ctx);
+      const imgTensor = new Tensor('f32', imgArray, shape);
       const startTime = performance.now();
-      const outputTensor = await model.infer(imgTensor, shape);
+      const outputTensor = await model.infer(imgTensor);
       const endTime = performance.now();
       statusElement.innerText = WAITING_INPUT_STATUS_TXT;
 
@@ -86,7 +80,7 @@ async function run() {
     });
   }
 
-  function getImgTensor(canvasCtx) {
+  function getImgArray(canvasCtx) {
     const rgbaData = canvasCtx.getImageData(0, 0, WIDTH, HEIGHT).data;
 
     return rgbaData.filter((_, index) => (index + 1)%4);

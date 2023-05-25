@@ -37,8 +37,10 @@ export interface OpenvinoWASMModule {
   Session: new (
     xmlFilename: string,
     binFilename: string,
-    originalShapeObj: OriginalShape,
-    layout: string) => OriginalModel,
+    originalShapeObj: OriginalShape | null,
+    layout: string,
+    inputType: string,
+  ) => OriginalModel,
   getVersionString(): string,
   getDescriptionString(): string,
 }
