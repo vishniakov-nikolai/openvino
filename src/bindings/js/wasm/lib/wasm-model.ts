@@ -5,9 +5,10 @@ import {
   uploadFile,
   convertTensor,
   parseOriginalTensor,
+  convertShape,
 } from './helpers';
 
-import type { ITensor, IModel, IShape } from 'openvinojs-common';
+import type { ITensor, IModel, IShape, ModelOptions } from 'openvinojs-common';
 import type {
   OpenvinoWASMModule,
   OriginalModel,
@@ -47,8 +48,11 @@ class WASMModel implements IModel {
   }
 }
 
-export default async function loadModel(xmlPath: string, binPath: string)
-: Promise<IModel> {
+export default async function loadModel(
+  xmlPath: string,
+  binPath: string,
+  options?: ModelOptions,
+): Promise<IModel> {
   if (typeof xmlPath !== 'string' || typeof binPath !== 'string')
     throw new Error('Parameters \'xmlPath\' and \'binPath\' should be string');
 
@@ -66,7 +70,16 @@ export default async function loadModel(xmlPath: string, binPath: string)
   uploadFile(ov, xmlFilename, xmlData);
   uploadFile(ov, binFilename, binData);
 
-  const originalModel = new ov.Session(xmlFilename, binFilename, null, '', '');
+  const inputPrecision = options?.inputPrecision || '';
+  const shapeData = options?.inputShape?.shapeData || null;
+  const layout = options?.inputShape?.layout || '';
+
+  const shape = shapeData
+    ? (shapeData instanceof Shape ? shapeData : new Shape(shapeData))
+    : null;
+  const originalShape = shape && convertShape(ov, shape).obj;
+  const originalModel = new ov.Session(xmlFilename, binFilename, originalShape,
+    layout, inputPrecision);
 
   return new WASMModel(ov, originalModel);
 }

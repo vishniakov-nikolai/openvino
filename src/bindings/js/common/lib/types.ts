@@ -63,7 +63,7 @@ export interface ModelNameAndPath {
   modelName: string;
 }
 
-type InputShape = {
+export type InputShape = {
   shapeData: Shape | number[],
   layout: string,
 };
