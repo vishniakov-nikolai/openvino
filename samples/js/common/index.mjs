@@ -1,18 +1,24 @@
 export const isNodeJS = typeof window === 'undefined';
 
-export async function getArrayByImgPath(path) {
+export async function getArrayByImgPath(path, { width, height } = {}) {
   const image = await loadImage(path);
-  const { width, height } = image;
+  const newWidth = width || image.width;
+  const newHeight = height || image.height;
 
-  const canvas = await createCanvas(width, width);
+  const canvas = await createCanvas(newWidth, newHeight);
   const ctx = canvas.getContext('2d');
 
   if (!ctx) throw new Error('Canvas context is null');
 
   ctx.drawImage(image, 0, 0);
-  const rgbaData = ctx.getImageData(0, 0, width, height).data;
 
-  return rgbaData.filter((_, index) => (index + 1)%4);
+  const rgbaData = ctx.getImageData(0, 0, newWidth, newHeight).data;
+
+  return convertRGBAtoRGB(rgbaData);
+}
+
+function convertRGBAtoRGB(rgbaData) {
+  return rgbaData.filter((_, index) => (index + 1)%4)
 }
 
 export async function loadImage(path) {
