@@ -9,4 +9,6 @@ you can find instructions how to run sample by using specific library.
 ## Samples list
 
 - classification
+- classification_ppp
 - detection
+- segmentation

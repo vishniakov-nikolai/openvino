@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
   <head>
     <title>OpenVINO JS</title>
@@ -11,15 +12,19 @@
         <ul>
           <li>
             <input id="classification" type="radio" name="sample" value="classification">
-            <label for="classification">Image classification</label>
+            <label for="classification">Image classification (<a href="https://docs.openvino.ai/2022.3/omz_models_model_mobilenet_v3_small_1_0_224_tf.html">mobilenet-v3-small-1.0-224-tf</a>)</label>
           </li>
           <li>
             <input id="classification_ppp" type="radio" name="sample" value="classification_ppp">
-            <label for="classification_ppp">Image classification with PrePostProcessing</label>
+            <label for="classification_ppp">Image classification with PrePostProcessing (<a href="https://docs.openvino.ai/2022.3/omz_models_model_mobilenet_v3_small_1_0_224_tf.html">mobilenet-v3-small-1.0-224-tf</a>)</label>
           </li>
           <li>
             <input id="detection" type="radio" name="sample" value="detection">
-            <label for="detection">Object detection</label>
+            <label for="detection">Object detection (<a href="https://docs.openvino.ai/2022.3/omz_models_model_face_detection_0200.html">face-detection-0200</a>)</label>
+          </li>
+          <li>
+            <input id="segmentation" type="radio" name="sample" value="segmentation">
+            <label for="segmentation">Semantic segmentation (<a href="https://docs.openvino.ai/2022.3/omz_models_model_road_segmentation_adas_0001.html">road-segmentation-adas-0001</a>)</label>
           </li>
         </ul>
       </fieldset>
