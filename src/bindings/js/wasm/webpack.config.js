@@ -24,6 +24,7 @@ function getConfigs(mode = 'development') {
         'crypto': false,
         'fs': false,
         'path': false,
+        'perf_hooks': false,
       }
     },
     plugins: [
