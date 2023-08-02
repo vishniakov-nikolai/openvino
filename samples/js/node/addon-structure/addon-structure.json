@@ -1,0 +1,158 @@
+[
+  {
+    "name": "ov (addon)",
+    "attributes": [
+      "resizeAlgorithms",
+      "element"
+    ],
+    "methods": [
+      "getDescriptionString",
+      "Output",
+      "Input",
+      "PrePostProcessor",
+      "Shape",
+      "Tensor",
+      "InferRequest",
+      "CompiledModel",
+      "Core",
+      "Model"
+    ]
+  },
+  {
+    "name": "Core",
+    "attributes": [],
+    "methods": [
+      "constructor",
+      "compileModel",
+      "readModelAsync",
+      "readModel"
+    ]
+  },
+  {
+    "name": "Model",
+    "attributes": [
+      "outputs",
+      "inputs"
+    ],
+    "methods": [
+      "constructor",
+      "output",
+      "infer",
+      "compile",
+      "read_model",
+      "getName"
+    ]
+  },
+  {
+    "name": "CompiledModel",
+    "attributes": [
+      "outputs",
+      "inputs"
+    ],
+    "methods": [
+      "constructor",
+      "output",
+      "input",
+      "createInferRequest"
+    ]
+  },
+  {
+    "name": "Tensor",
+    "attributes": [
+      "data"
+    ],
+    "methods": [
+      "constructor",
+      "getPrecision",
+      "getShape",
+      "getData"
+    ]
+  },
+  {
+    "name": "Shape",
+    "attributes": [
+      "data"
+    ],
+    "methods": [
+      "constructor",
+      "getData",
+      "shapeSize",
+      "getDim"
+    ]
+  },
+  {
+    "name": "InferRequest",
+    "attributes": [],
+    "methods": [
+      "constructor",
+      "getOutputTensor",
+      "getOutputTensors",
+      "getTensor",
+      "infer",
+      "setInputTensor"
+    ]
+  },
+  {
+    "name": "Input",
+    "attributes": [
+      "anyName",
+      "shape"
+    ],
+    "methods": [
+      "constructor",
+      "toString",
+      "getAnyName",
+      "getShape"
+    ]
+  },
+  {
+    "name": "Output",
+    "attributes": [
+      "anyName",
+      "shape"
+    ],
+    "methods": [
+      "constructor",
+      "toString",
+      "getAnyName",
+      "getShape"
+    ]
+  },
+  {
+    "name": "PrePostProcessor",
+    "attributes": [],
+    "methods": [
+      "constructor",
+      "build",
+      "setInputElementType",
+      "setInputModelLayout",
+      "setInputTensorLayout",
+      "preprocessResizeAlgorithm",
+      "setInputTensorShape"
+    ]
+  },
+  {
+    "name": "ov.element",
+    "attributes": [
+      "u8",
+      "u32",
+      "u16",
+      "i8",
+      "i64",
+      "i32",
+      "i16",
+      "f64",
+      "f32"
+    ],
+    "methods": []
+  },
+  {
+    "name": "ov.resizeAlgorithms",
+    "attributes": [
+      "RESIZE_NEAREST",
+      "RESIZE_CUBIC",
+      "RESIZE_LINEAR"
+    ],
+    "methods": []
+  }
+]
