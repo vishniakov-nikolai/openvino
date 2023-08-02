@@ -13,6 +13,7 @@ function main() {
   // times(2000, createAndReleaseModel(), { name: 'Model' }); // FIXME: leaks!
   // times(100, createAndReleaseCompiledModel(),
   //   { name: 'CompiledModel' }); // FIXME: leaks!
+  times(500000, createAndReleaseModelInputs(), { name: 'Model inputs' });
 
   console.log('Done main!');
 }
@@ -54,6 +55,14 @@ function createAndReleaseCompiledModel() {
   const model = core.readModel('../../assets/models/classification.xml');
 
   return () => core.compileModel(model, 'AUTO');
+}
+
+function createAndReleaseModelInputs() {
+  const core = new ov.Core();
+  const model = core.readModel('../../assets/models/classification.xml');
+  const compiledModel = core.compileModel(model, 'CPU');
+
+  return () => compiledModel.inputs;
 }
 
 function times(number, fn, { name } = {}) {
