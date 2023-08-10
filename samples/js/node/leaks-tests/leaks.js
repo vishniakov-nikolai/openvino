@@ -8,12 +8,11 @@ function main() {
 
   // times(100000, createAndReleaseShape, { name: 'Shape' });
   // times(300000, createAndReleaseTensor, { name: 'Tensor' });
-  // times(300000, createAndReleaseCore, { name: 'Core' }); // FIXME: leaks!
   // times(1000000, createAndReleasePPP(), { name: 'PrePostProcessor' });
+  times(300000, createAndReleaseCore, { name: 'Core' }); // FIXME: leaks!
   // times(2000, createAndReleaseModel(), { name: 'Model' }); // FIXME: leaks!
-  // times(100, createAndReleaseCompiledModel(),
-  //   { name: 'CompiledModel' }); // FIXME: leaks!
-  times(500000, createAndReleaseModelInputs(), { name: 'Model inputs' });
+  // times(100, createAndReleaseCompiledModel(), { name: 'CompiledModel' }); // FIXME: leaks!
+  // times(500000, createAndReleaseModelInputs(), { name: 'Model inputs' }); //  FIXME: leaks!
 
   console.log('Done main!');
 }
@@ -22,7 +21,7 @@ setTimeout(() => main(), TIMEOUT);
 setTimeout(() => main(), TIMEOUT*2);
 
 function createAndReleaseCore() {
-  new ov.Core();
+  const core = new ov.Core();
 }
 
 function createAndReleaseTensor() {
