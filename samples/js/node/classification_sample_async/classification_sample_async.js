@@ -93,16 +93,17 @@ async function main(modelPath, images, deviceName) {
   const inferRequest = compiledModel.createInferRequest();
 
   const promises = tensors.map((t, i) => {
-    const promisifiedAsyncInfer = util.promisify(ov.asyncInfer);
-    const inferPromise = promisifiedAsyncInfer(inferRequest, [t]);
-
-    inferPromise.then(result =>
-      completionCallback(result[outputName], images[i]));
+    // const promisifiedAsyncInfer = util.promisify(ov.asyncInfer);
+    console.log(`= iter: ${i}`);
+    const inferPromise = ov.asyncInfer(inferRequest, [t], (err, result) => {
+      completionCallback(result[outputName], images[i]);
+    });
 
     return inferPromise;
   });
 
   //----------- Step 7. Do inference -------------------------------------------
+  console.log('Before done');
 
   await Promise.all(promises);
   console.log('All inferences executed');
