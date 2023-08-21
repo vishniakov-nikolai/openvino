@@ -10,14 +10,14 @@ def create_and_release_core():
 def create_and_release_model():
   core = ov.Core()
 
-  for i in range(0, 80_000):
+  for i in range(0, 10000):
     model = core.read_model('../../assets/models/classification.xml')
 
 def main():
-  # for i in range(0, 1_000_000):
-  #   create_and_release_core()
-  create_and_release_model()
+  for i in range(0, 300_000):
+    create_and_release_core()
+  # create_and_release_model()
 
 
 main()
-test()
+# test()

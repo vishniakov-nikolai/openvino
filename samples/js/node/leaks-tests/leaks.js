@@ -1,15 +1,15 @@
 const { addon: ov } = require('openvinojs-node');
 
-const SIZE = 10000;
+const SIZE = 100_000;
 const TIMEOUT = 10000;
 
 function main() {
   console.log('Start main!');
 
-  // times(100000, createAndReleaseShape, { name: 'Shape' });
-  // times(300000, createAndReleaseTensor, { name: 'Tensor' });
+  // times(3_000_000, createAndReleaseShape, { name: 'Shape' });
+  times(3_000_000, createAndReleaseTensor, { name: 'Tensor' });
   // times(1000000, createAndReleasePPP(), { name: 'PrePostProcessor' });
-  times(300000, createAndReleaseCore, { name: 'Core' }); // FIXME: leaks!
+  // times(300000, createAndReleaseCore, { name: 'Core' }); // FIXME: leaks!
   // times(2000, createAndReleaseModel(), { name: 'Model' }); // FIXME: leaks!
   // times(100, createAndReleaseCompiledModel(), { name: 'CompiledModel' }); // FIXME: leaks!
   // times(500000, createAndReleaseModelInputs(), { name: 'Model inputs' }); //  FIXME: leaks!
