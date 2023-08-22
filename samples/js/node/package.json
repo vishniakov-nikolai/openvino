@@ -14,5 +14,8 @@
   },
   "engines": {
     "node": ">=18.16.0"
+  },
+  "dependencies": {
+    "@xenova/transformers": "file:../../../../transformers.js/"
   }
 }
