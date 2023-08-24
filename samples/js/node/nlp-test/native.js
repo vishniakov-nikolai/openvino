@@ -1,10 +1,14 @@
 main();
 
 async function main() {
-  const { pipeline } = await import('@xenova/transformers');
+  const transformers = await import('@xenova/transformers');
+  const { pipeline, Model } = transformers;
 
-  const gen = await pipeline('text-generation');
-  const out = await gen('Hello, I\'m a language model');
+  console.log(Model)
 
-  console.log(out);
+  let classifier = await pipeline('sentiment-analysis', {});
+  return;
+  let result = await classifier('I hate transformers!');
+
+  console.log(result);
 }
