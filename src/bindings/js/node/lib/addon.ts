@@ -41,9 +41,8 @@ interface Tensor {
 interface TensorConstructor {
   new(type: element,
       shape: number[],
-      tensorData: number[] | SupportedTypedArray): Tensor;
+      tensorData?: number[] | SupportedTypedArray): Tensor;
 }
-
 
 interface InferRequest {
   // FIXME: are we going to add index parameter for this method?
@@ -61,6 +60,7 @@ interface Output {
   toString(): string;
   getAnyName(): string;
   getShape(): number[];
+  getPartialShape(): number[];
   setNames(names: string[]): void;
   getNames(): string[];
 }
