@@ -26,8 +26,8 @@
       "include_dirs": [
         "<!@(node -p \"require('node-addon-api').include\")",
         "include",
-        "ov_runtime/runtime/include",
-        "ov_runtime/runtime/include/ie"
+        "<!(pwd)/ov_runtime/runtime/include/",
+        "<!(pwd)/ov_runtime/runtime/include/ie/"
       ],
 
       "dependencies": ["<!(node -p \"require('node-addon-api').gyp\")"],
@@ -35,7 +35,7 @@
       "defines": ["NAPI_DISABLE_CPP_EXCEPTIONS", "DNAPI_VERSION=6"],
 
       "libraries": ["-lopenvino",
-                    "-L ov_runtime/runtime/lib/intel64"],
+                    "-L<!(pwd)/ov_runtime/runtime/lib/intel64/"],
     }
   ]
 }
