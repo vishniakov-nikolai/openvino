@@ -3,6 +3,7 @@
 
 #include <napi.h>
 
+#include "async_infer.hpp"
 #include "compiled_model.hpp"
 #include "core_wrap.hpp"
 #include "element_type.hpp"
@@ -12,10 +13,9 @@
 #include "node_output.hpp"
 #include "openvino/openvino.hpp"
 #include "pre_post_process_wrap.hpp"
+#include "resize_algorithm.hpp"
 #include "shape.hpp"
 #include "tensor.hpp"
-#include "resize_algorithm.hpp"
-#include "async_infer.hpp"
 
 Napi::String Method(const Napi::CallbackInfo& info) {
     ov::Version version = ov::get_openvino_version();
@@ -43,6 +43,7 @@ Napi::Object InitAll(Napi::Env env, Napi::Object exports) {
 
     exports.Set(Napi::String::New(env, "getDescriptionString"), Napi::Function::New(env, Method));
     exports.Set(Napi::String::New(env, "asyncInfer"), Napi::Function::New(env, asyncInfer));
+    exports.Set("asyncInferTSFN", Napi::Function::New(env, asyncInferTSFN));
 
     return exports;
 }

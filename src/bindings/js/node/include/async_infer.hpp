@@ -12,3 +12,5 @@
  * @param callback A Javascript Function to call
  */
 void asyncInfer(const Napi::CallbackInfo& info);
+
+Napi::Value asyncInferTSFN(const Napi::CallbackInfo& info);
