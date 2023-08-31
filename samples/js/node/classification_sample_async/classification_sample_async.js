@@ -95,7 +95,7 @@ async function main(modelPath, images, deviceName) {
   const promises = tensors.map((t, i) => {
     // const promisifiedAsyncInfer = util.promisify(ov.asyncInfer);
     console.log(`= iter: ${i}`);
-    const inferPromise = ov.asyncInfer(inferRequest, [t], (err, result) => {
+    const inferPromise = ov.asyncInferTSFN(inferRequest, [t], (err, result) => {
       completionCallback(result[outputName], images[i]);
     });
 

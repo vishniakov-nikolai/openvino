@@ -39,48 +39,46 @@ Napi::Value asyncInferTSFN(const CallbackInfo& info) {
         reportError(info.Env(), "asyncInfer method takes as a second argument an array or an object.");
     }
 
-    // InferRequestWrap ir;
-    // auto ir = Napi::ObjectWrap<InferRequestWrap>::Unwrap(info[0].ToObject());
-    int count = info[0].As<Number>().Int32Value();
+    // InferRequestWrap * ir
+    auto ir = Napi::ObjectWrap<InferRequestWrap>::Unwrap(info[0].ToObject());
+    Napi::Value inputs = info[1].As<Napi::Value>();
 
     // Create a ThreadSafeFunction
     tsfn = ThreadSafeFunction::New(env,
                                    info[2].As<Function>(),  // JavaScript function called asynchronously
                                    "asyncInfer",            // Name
                                    0,                       // Unlimited queue
-                                   1,                       // Only one thread will use this initially
-                                   [](Napi::Env) {          // Finalizer used to clean threads up
-                                       nativeThread.join();
-                                   });
+                                   1                        // Only one thread will use this initially
+    );
 
-    // Create a native thread
-    nativeThread = std::thread([count] {
-        auto callback = [](Napi::Env env, Function jsCallback, int* value) {
-            // Transform native data into JS data, passing it to the provided
-            // `jsCallback` -- the TSFN's JavaScript function.
-            jsCallback.Call({Number::New(env, *value)});
+    auto callback = [](Napi::Env env, Function jsCallback, InferRequestWrap* value) {
+        // Transform native data into JS data, passing it to the provided
+        // `jsCallback` -- the TSFN's JavaScript function.
 
-            // We're finished with the data.
-            delete value;
-        };
+        Napi::Object res = value->get_output_tensors(env);
+        jsCallback.Call({env.Null(), res});
+        // delete value;
+    };
 
-        for (int i = 0; i < count; i++) {
-            // Create new data
-            int* value = new int(clock());
+    if (inputs.IsArray()) {
+        ir->infer(inputs.As<Napi::Array>());
+    } else if (inputs.IsObject()) {
+        ir->infer(inputs.As<Napi::Object>());
 
-            // Perform a blocking call
-            napi_status status = tsfn.BlockingCall(value, callback);
-            if (status != napi_ok) {
-                // Handle error
-                break;
-            }
+    } else {
+        reportError(env, "asyncInfer method takes as a second argument an array or an object.");
+    }
 
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-        }
+    // here a copy of InferRequest ir, and create a pointer to it
+    // that will be deleted after TSFN is finished
+    auto res = ir->get_output_tensors(env).As<Napi::Value>();
+    auto res_ptr = &res;
 
-        // Release the thread-safe function
-        tsfn.Release();
-    });
+    // Perform a blocking call
+    napi_status status = tsfn.BlockingCall(ir, callback);
+
+    // Release the thread-safe function
+    tsfn.Release();
 
     return Boolean::New(env, true);
 }

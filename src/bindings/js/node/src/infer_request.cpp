@@ -109,3 +109,17 @@ Napi::Value InferRequestWrap::get_output_tensors(const Napi::CallbackInfo& info)
 
     return outputs_obj;
 }
+
+Napi::Object InferRequestWrap::get_output_tensors(Napi::Env env) {
+    auto compiled_model = _infer_request.get_compiled_model().outputs();
+    auto outputs_obj = Napi::Object::New(env);
+
+    for (auto& node : compiled_model) {
+        auto tensor = _infer_request.get_tensor(node);
+        auto new_tensor = ov::Tensor(tensor.get_element_type(), tensor.get_shape());
+        tensor.copy_to(new_tensor);
+        outputs_obj.Set(node.get_any_name(), TensorWrap::Wrap(env, new_tensor));
+    }
+
+    return outputs_obj;
+}

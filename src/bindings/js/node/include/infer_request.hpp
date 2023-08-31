@@ -73,6 +73,9 @@ public:
     /** @return A Javascript object with model outputs. */
     Napi::Value get_output_tensors(const Napi::CallbackInfo& info);
 
+    /** @return A Javascript object with InferRequest outputs. */
+    Napi::Object get_output_tensors(Napi::Env env);
+
 private:
     ov::InferRequest _infer_request;
 };
