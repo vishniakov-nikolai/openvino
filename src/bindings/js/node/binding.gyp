@@ -23,19 +23,48 @@
         "src/resize_algorithm.cpp"
       ],
 
-      "include_dirs": [
-        "<!@(node -p \"require('node-addon-api').include\")",
-        "include",
-        "<!(pwd)/ov_runtime/runtime/include/",
-        "<!(pwd)/ov_runtime/runtime/include/ie/"
-      ],
-
       "dependencies": ["<!(node -p \"require('node-addon-api').gyp\")"],
 
       "defines": ["NAPI_DISABLE_CPP_EXCEPTIONS", "DNAPI_VERSION=6"],
 
-      "libraries": ["-lopenvino",
-                    "-L<!(pwd)/ov_runtime/runtime/lib/intel64/"],
+      "conditions": [
+        [
+          "OS=='linux'",
+          {
+            "include_dirs": [
+              "<!@(node -p \"require('node-addon-api').include\")",
+              "<(module_root_dir)/include",
+              "<(module_root_dir)/ov_runtime/install/runtime/include/",
+              "<(module_root_dir)/ov_runtime/install/runtime/include/ie/"
+            ],
+
+            "libraries": ["-lopenvino",
+                          "-L<(module_root_dir)/ov_runtime/runtime/lib/intel64/"],
+          },
+        ],
+        [
+          "OS=='win'",
+          {
+            "include_dirs": [
+              "<!@(node -p \"require('node-addon-api').include\")",
+              "include",
+
+              "<(module_root_dir)/ov_runtime/runtime/include/",
+              "<(module_root_dir)/ov_runtime/runtime/include/ie/",
+              "<(module_root_dir)/ov_runtime/runtime/3rdparty/tbb/include",
+            ],
+
+            "libraries": [
+              "-l<(module_root_dir)/ov_runtime/runtime/lib/intel64/Release/openvino.lib",
+            ],
+            "msvs_settings": {
+              "VCCLCompilerTool": {
+                "ExceptionHandling": "1",
+              }
+            }
+          },
+        ]
+      ],
     }
   ]
 }
