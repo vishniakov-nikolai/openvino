@@ -1,3 +1,6 @@
+import os from 'node:os';
+import path from 'node:path';
+
 type SupportedTypedArray =
   | Int8Array
   | Uint8Array
@@ -114,7 +117,17 @@ export interface NodeAddon {
   ): void;
 }
 
+setPath();
+
 export default
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     require('../build/Release/ov_node_addon.node') as
     NodeAddon;
+
+function setPath() {
+  if (os.platform() === 'win32')
+    process.env.PATH = [
+      process.env.PATH,
+      path.join(__dirname, '..', 'ov_runtime', 'runtime', 'lib', 'intel65'),
+    ].join(':');
+}

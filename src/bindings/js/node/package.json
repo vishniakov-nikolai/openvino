@@ -7,12 +7,17 @@
   "types": "./types/index.d.ts",
   "scripts": {
     "build": "node-gyp build",
+    "preinstall": "npm run download_runtime -- --ignore-if-exists",
     "install": "node-gyp configure",
     "postinstall": "npm run build & npm run tsc",
     "lint": "eslint .",
     "rebuild": "node-gyp rebuild",
     "test": "node --test",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "download_runtime": "node ./scripts/download_runtime.js"
+  },
+  "dependencies": {
+    "@mapbox/node-pre-gyp": "^1.0.11"
   },
   "devDependencies": {
     "@types/node": "^20.5.0",
@@ -26,5 +31,12 @@
   "engines": {
     "node": ">=18.16.0"
   },
-  "gypfile": true
+  "gypfile": true,
+  "binary": {
+    "module_name": "ov_runtime",
+    "module_path": "./ov_runtime/",
+    "package_name": "{letter}_openvino_toolkit_{os}_2023.1.0.dev20230811_x86_64.tgz",
+    "host": "https://storage.openvinotoolkit.org/",
+    "remote_path": "repositories/openvino/packages/master/2023.1.0.dev20230811/"
+  }
 }

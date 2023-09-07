@@ -20,38 +20,40 @@
         "src/model_wrap.cpp",
         "src/addon.cpp",
         "src/element_type.cpp",
-        "src/resize_algorithm.cpp"
+        "src/resize_algorithm.cpp",
       ],
 
       "dependencies": ["<!(node -p \"require('node-addon-api').gyp\")"],
 
       "defines": ["NAPI_DISABLE_CPP_EXCEPTIONS", "DNAPI_VERSION=6"],
 
+      "include_dirs": [
+        "<!@(node -p \"require('node-addon-api').include\")",
+        "<(module_root_dir)/include/",
+      ],
+
       "conditions": [
         [
           "OS=='linux'",
           {
             "include_dirs": [
-              "<!@(node -p \"require('node-addon-api').include\")",
-              "<(module_root_dir)/include",
-              "<(module_root_dir)/ov_runtime/install/runtime/include/",
-              "<(module_root_dir)/ov_runtime/install/runtime/include/ie/"
+              "<(module_root_dir)/ov_runtime/runtime/include/",
+              "<(module_root_dir)/ov_runtime/runtime/include/ie/",
             ],
 
-            "libraries": ["-lopenvino",
-                          "-L<(module_root_dir)/ov_runtime/runtime/lib/intel64/"],
+            "libraries": [
+              "-lopenvino",
+              "-L<(module_root_dir)/ov_runtime/runtime/lib/intel64/",
+            ],
           },
         ],
         [
           "OS=='win'",
           {
             "include_dirs": [
-              "<!@(node -p \"require('node-addon-api').include\")",
-              "include",
-
               "<(module_root_dir)/ov_runtime/runtime/include/",
               "<(module_root_dir)/ov_runtime/runtime/include/ie/",
-              "<(module_root_dir)/ov_runtime/runtime/3rdparty/tbb/include",
+              "<(module_root_dir)/ov_runtime/runtime/3rdparty/tbb/include/",
             ],
 
             "libraries": [
