@@ -125,9 +125,14 @@ export default
     NodeAddon;
 
 function setPath() {
+  const { delimiter } = path;
+
   if (os.platform() === 'win32')
     process.env.PATH = [
       process.env.PATH,
-      path.join(__dirname, '..', 'ov_runtime', 'runtime', 'lib', 'intel65'),
-    ].join(':');
+      path.join(__dirname,
+        ...'../ov_runtime/runtime/bin/intel64/Release'.split('/')),
+      path.join(__dirname,
+        ...'../ov_runtime/runtime/3rdparty/tbb/bin'.split('/')),
+    ].join(delimiter) + delimiter;
 }

@@ -1,36 +1,53 @@
 const os = require('os');
+const path = require('path');
 const fs = require('node:fs/promises');
-const nodePreGyp = require('@mapbox/node-pre-gyp');
+const decompress = require('decompress');
+const { createWriteStream } = require('node:fs');
+
+const packageJson = require('../package.json');
+
+const codeENOENT = 'ENOENT';
 
 main();
 
 async function main() {
-  const run = new nodePreGyp.Run({ argv: [] });
   const osInfo = await detectOS();
-  const modulePath = run['package_json'].binary['module_path'];
+  const modulePath = packageJson.binary['module_path'];
 
   const isRuntimeDirExists = await checkDirExistence(modulePath);
 
   if (isRuntimeDirExists && !process.argv.includes('-f')) {
     if (process.argv.includes('--ignore-if-exists')) {
-      console.error(`Directory '${modulePath}' exists, skip '--ignore-if-exists' flag passed`);
+      console.error(`Directory '${modulePath}' exists, `
+        + `skip '--ignore-if-exists' flag passed`);
       return;
     }
 
-    console.error(`Directory '${modulePath}' is already exist, to force runtime installation run 'npm run download_runtime -f'`);
+    console.error(`Directory '${modulePath}' is already exist, to force `
+      + `runtime installation run 'npm run download_runtime -- -f'`);
     process.exit(1);
   }
 
-  const originalPackageName = run['package_json'].binary['package_name'];
+  const originalPackageName = packageJson.binary['package_name'];
 
   let packageName = originalPackageName.replace('{letter}', osInfo.letter);
   packageName = packageName.replace('{os}', osInfo.os);
+  packageName = packageName.replace('{extension}', osInfo.extension);
 
-  run['package_json'].binary['package_name'] = packageName;
+  const binaryUrl = packageJson.binary.host + packageJson.binary['remote_path']
+    + packageName;
 
-  run.commands.install([], () => {
-    console.log('Runtime downloaded');
-  });
+  try {
+    await downloadRuntime(binaryUrl);
+  } catch (err) {
+    console.log(`Runtime fetch failed. Reason ${err}`);
+
+    if (err instanceof Error) throw err;
+
+    return;
+  }
+
+  console.log('Ready');
 }
 
 async function detectOS() {
@@ -45,9 +62,11 @@ async function detectOS() {
     win32: {
       os: 'windows',
       letter: 'w',
+      extension: 'zip',
     },
     linux: {
       letter: 'l',
+      extension: 'tgz',
     }
   };
 
@@ -79,8 +98,91 @@ async function checkDirExistence(pathToDir) {
     return true;
   }
   catch (err) {
-    if (err.code !== 'ENOENT') throw err;
+    if (err.code !== codeENOENT) throw err;
 
     return false;
   }
+}
+
+async function downloadRuntime(uri, opts = {}) {
+  const fetch = (await import('node-fetch')).default;
+
+  console.log('GET', uri);
+
+  // Try getting version info from the currently running npm.
+  const envVersionInfo = process.env['npm_config_user_agent']
+    || `node ${process.version}`;
+
+  const sanitized = uri.replace('+', '%2B');
+  const requestOpts = {
+    uri: sanitized,
+    headers: { 'User-Agent': `openvinojs-node (${envVersionInfo})` },
+    'follow_max': 10,
+  };
+
+  if (opts.cafile) {
+    try {
+      requestOpts.ca = fs.readFileSync(opts.cafile);
+    } catch (e) {
+      return callback(e);
+    }
+  } else if (opts.ca) {
+    requestOpts.ca = opts.ca;
+  }
+
+  const proxyUrl = opts.proxy || process.env.http_proxy ||
+    process.env.HTTP_PROXY || process.env.npm_config_proxy;
+  let agent;
+  if (proxyUrl) {
+    const ProxyAgent = require('https-proxy-agent');
+
+    agent = new ProxyAgent(proxyUrl);
+    console.log(`Proxy agent configured using: '${proxyUrl}'`);
+  }
+
+  const res = await fetch(sanitized, { agent });
+
+  if (!res.ok)
+    throw new Error(`Response status ${res.status} ${res.statusText} `
+      + `on ${sanitized}`);
+
+  const filename = path.basename(uri);
+  const tmpPath = path.resolve(__dirname, '..', 'tmp');
+  const fullPath = path.resolve(tmpPath, filename);
+
+  try {
+    await fs.rm(fullPath);
+    await fs.rmdir(tmpPath);
+  } catch(err) {
+    if (err.code !== codeENOENT) throw err;
+  }
+
+  await fs.mkdir(tmpPath, {  });
+
+  const fileStream = createWriteStream(fullPath, { flags: 'wx' });
+
+  return new Promise((resolve, reject) => {
+    let error = null;
+    const dataStream = res.body
+
+    console.log('Downloading openvino runtime archive');
+
+    dataStream.pipe(fileStream).on('error', err => error = err);
+    dataStream.on('end', async () => {
+      if (error || (res.status !== 200))
+        return reject(error || `Status: ${res.status}, ${res.statusText}`);
+
+      console.log('Downloaded');
+
+      const runtimeDir = path.resolve(__dirname, '..', 'ov_runtime');
+
+      console.log('Uncompressing...');
+      await decompress(fullPath, runtimeDir, { strip: 1 });
+      await fs.rm(fullPath);
+      await fs.rmdir(tmpPath);
+      console.log('The archive was successfully uncompressed');
+
+      resolve();
+    });
+  });
 }
