@@ -9,7 +9,8 @@ const packageJson = require('../package.json');
 
 const codeENOENT = 'ENOENT';
 
-if (require.main === module) {
+// If runtime dir specified, skip runtime downloading
+if (require.main === module && !process.env.RUNTIME_DIR) {
   main();
 }
 

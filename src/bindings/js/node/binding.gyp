@@ -1,4 +1,7 @@
 {
+  "variables": {
+    "RUNTIME_DIR": "<!(echo ${RUNTIME_DIR:-ov_runtime})",
+  },
   "targets": [
     {
       "target_name": "ov_node_addon",
@@ -43,13 +46,13 @@
           "OS=='linux'",
           {
             "include_dirs": [
-              "<(module_root_dir)/ov_runtime/runtime/include/",
-              "<(module_root_dir)/ov_runtime/runtime/include/ie/",
+              "<(module_root_dir)/<@(RUNTIME_DIR)/runtime/include/",
+              "<(module_root_dir)/<@(RUNTIME_DIR)/runtime/include/ie/",
             ],
 
             "libraries": [
               "-lopenvino",
-              "-L<(module_root_dir)/ov_runtime/runtime/lib/intel64/",
+              "-L<(module_root_dir)/<@(RUNTIME_DIR)/runtime/lib/intel64/",
             ],
           },
         ],
@@ -57,13 +60,13 @@
           "OS=='win'",
           {
             "include_dirs": [
-              "<(module_root_dir)/ov_runtime/runtime/include/",
-              "<(module_root_dir)/ov_runtime/runtime/include/ie/",
-              "<(module_root_dir)/ov_runtime/runtime/3rdparty/tbb/include/",
+              "<(module_root_dir)/<@(RUNTIME_DIR)/runtime/include/",
+              "<(module_root_dir)/<@(RUNTIME_DIR)/runtime/include/ie/",
+              "<(module_root_dir)/<@(RUNTIME_DIR)/runtime/3rdparty/tbb/include/",
             ],
 
             "libraries": [
-              "-l<(module_root_dir)/ov_runtime/runtime/lib/intel64/Release/openvino.lib",
+              "-l<(module_root_dir)/<@(RUNTIME_DIR)/runtime/lib/intel64/Release/openvino.lib",
             ],
             "msvs_settings": {
               "VCCLCompilerTool": {
