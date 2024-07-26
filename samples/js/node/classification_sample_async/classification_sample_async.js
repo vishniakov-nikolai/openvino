@@ -72,7 +72,7 @@ async function main(modelPath, images, deviceName) {
   //----------- Step 4. Apply preprocessing ------------------------------------
   const _ppp = new ov.preprocess.PrePostProcessor(model);
   _ppp.input().tensor().setLayout('NHWC').setElementType(ov.element.u8);
-  _ppp.input().model().setLayout('NCHW');
+  _ppp.input().model().setLayout('NHWC');
   _ppp.output().tensor().setElementType(ov.element.f32);
   _ppp.build();
 

@@ -59,7 +59,7 @@ async function main(modelPath, imagePath, deviceName) {
     .setElementType(ov.element.u8)
     .setLayout('NHWC');
 
-  _ppp.input().model().setLayout('NCHW');
+  _ppp.input().model().setLayout('NHWC');
   _ppp.output().tensor().setElementType(ov.element.f32);
   _ppp.build();
 
