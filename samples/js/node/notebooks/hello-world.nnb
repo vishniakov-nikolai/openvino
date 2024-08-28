@@ -39,7 +39,29 @@
                         {
                             "mime": "application/vnd.code.notebook.stdout",
                             "value": [
+                                "Proxy agent configured using: 'http://proxy-dmz.intel.com:911'",
+                                "Proxy agent configured using: 'http://proxy-dmz.intel.com:911'",
                                 "File successfully stored at '/home/nvishnya/Code/wasm-openvino/samples/js/assets/models/v3-small_224_1.0_float.bin'",
+                                ""
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "javascript",
+            "source": [
+                "// await downloadFile('https://github.com/openvinotoolkit/testdata/raw/master/models/test_model/test_model_fp32.xml?download=1', 'test_model_fp32.xml', '../../assets');\n// await downloadFile('https://vishniakov-nikolai.github.io/ov-testdata/models/test_model/test_model_fp32.xml', 'test_model_fp32.xml', '../../assets');\ntry {\nawait downloadFile('https://media.githubusercontent.com/media/openvinotoolkit/testdata/master/models/test_model/test_model_fp32.bin', 'test_model_fp32.bin', '../../assets');\n} catch(e) {\n  console.log(e);\n}\n"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "Proxy agent configured using: 'http://proxy-dmz.intel.com:911'",
+                                "File successfully stored at '/home/nvishnya/Code/wasm-openvino/samples/js/assets/test_model_fp32.bin'",
                                 ""
                             ]
                         }
@@ -65,6 +87,8 @@
                         {
                             "mime": "application/vnd.code.notebook.stdout",
                             "value": [
+                                "Proxy agent configured using: 'http://proxy-dmz.intel.com:911'",
+                                "Proxy agent configured using: 'http://proxy-dmz.intel.com:911'",
                                 "File successfully stored at '/home/nvishnya/Code/wasm-openvino/samples/js/assets/datasets/imagenet_class_index.json'",
                                 ""
                             ]
@@ -97,9 +121,31 @@
         {
             "language": "javascript",
             "source": [
-                "const imgData = await getImageData('../../assets/images/coco.jpg');\n\n// Use opencv-wasm to preprocess image.\nconst originalImage = cv.matFromImageData(imgData);\nconst image = new cv.Mat();\n// The MobileNet model expects images in RGB format.\ncv.cvtColor(originalImage, image, cv.COLOR_RGBA2RGB);\n// Resize to MobileNet image shape.\ncv.resize(image, image, new cv.Size(224, 224));\n\ndisplayImage(imgData, display);\n"
+                "const imgData = await getImageData('../../assets/images/coco.jpg');\n\n// Use opencv-wasm to preprocess image.\nconst originalImage = cv.matFromImageData(imgData);\nconst image = new cv.Mat();\n// The MobileNet model expects images in RGB format.\ncv.cvtColor(originalImage, image, cv.COLOR_RGBA2RGB);\n// Resize to MobileNet image shape.\ncv.resize(image, image, new cv.Size(224, 224));\n\nconsole.log(imgData.data)\n\ndisplayImage(imgData, display);\n"
             ],
             "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "Uint8ClampedArray(1846400) [",
+                                "   82,  89, 105, 255,  73,  82,  91, 255,  83,  93,  94, 255,",
+                                "  125, 138, 128, 255, 114, 129, 110, 255, 128, 147, 125, 255,",
+                                "  125, 143, 129, 255, 116, 137, 130, 255, 106, 125, 132, 255,",
+                                "  121, 140, 157, 255, 133, 147, 173, 255, 162, 174, 200, 255,",
+                                "  136, 142, 164, 255, 114, 118, 130, 255, 143, 144, 149, 255,",
+                                "  162, 163, 158, 255, 146, 150, 136, 255, 142, 147, 127, 255,",
+                                "   93,  96,  77, 255, 107, 111,  88, 255,  86,  86,  60, 255,",
+                                "   94,  95,  64, 255, 105, 104,  74, 255, 111, 110,  79, 255,",
+                                "  140, 140, 106, 255,",
+                                "  ... 1846300 more items",
+                                "]",
+                                ""
+                            ]
+                        }
+                    ]
+                },
                 {
                     "items": [
                         {

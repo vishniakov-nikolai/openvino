@@ -17,7 +17,7 @@
         {
             "language": "typescript",
             "source": [
-                "const {\n  getImageData, \n  displayArrayAsImage, \n  arrayToImageData,\n  transform,\n  downloadFile,\n} = require('../helpers');\n\nconst { cv } = require('opencv-wasm');\nconst { display } = require('node-kernel');\n\nconst { addon: ov } = require('openvino-node'); \n"
+                "const {\n  getImageData,\n  displayArrayAsImage,\n  arrayToImageData,\n  transform,\n  downloadFile,\n} = require('../helpers');\n\nconst { cv } = require('opencv-wasm');\nconst { display } = require('node-kernel');\n\nconst { addon: ov } = require('openvino-node');\n"
             ],
             "outputs": []
         },
@@ -39,6 +39,8 @@
                         {
                             "mime": "application/vnd.code.notebook.stdout",
                             "value": [
+                                "Proxy agent configured using: 'http://proxy-dmz.intel.com:911'",
+                                "Proxy agent configured using: 'http://proxy-dmz.intel.com:911'",
                                 "File successfully stored at '/home/nvishnya/Code/wasm-openvino/samples/js/assets/models/road-segmentation-adas-0001.bin'",
                                 ""
                             ]
@@ -65,6 +67,7 @@
                         {
                             "mime": "application/vnd.code.notebook.stdout",
                             "value": [
+                                "Proxy agent configured using: 'http://proxy-dmz.intel.com:911'",
                                 "File successfully stored at '/home/nvishnya/Code/wasm-openvino/samples/js/assets/images/empty_road_mapillary.jpg'",
                                 ""
                             ]
@@ -97,7 +100,7 @@
         {
             "language": "typescript",
             "source": [
-                "const imgData = await getImageData('../../assets/images/empty_road_mapillary.jpg');\n\nconst originalImage = cv.matFromImageData(imgData);\nconst { cols: originalWidth, rows: originalHeight } = originalImage;\n\nconst image = new cv.Mat();\ncv.cvtColor(originalImage, image, cv.COLOR_RGBA2RGB);\ncv.cvtColor(image, image, cv.COLOR_BGR2RGB); \n\nconst [B, C, H, W] = inputLayer.shape;\n\ncv.resize(image, image, new cv.Size(W, H));\n\nconst inputImage = transform(image.data, { width: W, height: H }, [0, 1, 2]); // NHWC to NCHW\n\ndisplayArrayAsImage(originalImage.data, originalWidth, originalHeight, display);\n"
+                "const imgData = await getImageData('../../assets/images/empty_road_mapillary.jpg');\n\nconst originalImage = cv.matFromImageData(imgData);\nconst { cols: originalWidth, rows: originalHeight } = originalImage;\n\nconst image = new cv.Mat();\ncv.cvtColor(originalImage, image, cv.COLOR_RGBA2RGB);\ncv.cvtColor(image, image, cv.COLOR_BGR2RGB);\n\nconst [B, C, H, W] = inputLayer.shape;\n\ncv.resize(image, image, new cv.Size(W, H));\n\nconst inputImage = transform(image.data, { width: W, height: H }, [0, 1, 2]); // NHWC to NCHW\n\ndisplayArrayAsImage(originalImage.data, originalWidth, originalHeight, display);\n"
             ],
             "outputs": [
                 {
@@ -120,7 +123,7 @@
         {
             "language": "typescript",
             "source": [
-                "const tensor_data = new Float32Array(inputImage);\nconst tensor = new ov.Tensor(ov.element.f32, inputLayer.shape, tensor_data);\n\nconst inferRequest = compiledModel.createInferRequest();\ninferRequest.setInputTensor(tensor);\ninferRequest.infer();\n\nconst output = inferRequest.getTensor(outputLayer);\n\nconst { data: outputData } = output;\nconst layers = { bg: [], c: [], h: [], w: [] };\nconst resultLayer = [];\nconst colormap = [[68, 1, 84, 255], [48, 103, 141, 255], [53, 183, 120, 255], [199, 216, 52, 255]];\n\nconst size = outputData.length/4;\n\nfor (let i = 0; i < size; i++) {\n  const valueAt = (i, number) => outputData[i + number*size];\n\n  const currentValues = { \n    bg: valueAt(i, 0),\n    c: valueAt(i, 1),\n    h: valueAt(i, 2),\n    w: valueAt(i, 3),\n  };\n  const values = Object.values(currentValues);\n  const maxIndex = values.indexOf(Math.max(...values));\n\n  resultLayer.push(maxIndex);\n}\n\nconst pixels = [];\nresultLayer.forEach(i => pixels.push(...colormap[i]));\n\ndisplayArrayAsImage(pixels, W, H, display);\n"
+                "const tensor_data = new Float32Array(inputImage);\nconst tensor = new ov.Tensor(ov.element.f32, inputLayer.shape, tensor_data);\n\nconst inferRequest = compiledModel.createInferRequest();\ninferRequest.setInputTensor(tensor);\ninferRequest.infer();\n\nconst output = inferRequest.getTensor(outputLayer);\n\nconst { data: outputData } = output;\nconst layers = { bg: [], c: [], h: [], w: [] };\nconst resultLayer = [];\nconst colormap = [[68, 1, 84, 255], [48, 103, 141, 255], [53, 183, 120, 255], [199, 216, 52, 255]];\n\nconst size = outputData.length/4;\n\nfor (let i = 0; i < size; i++) {\n  const valueAt = (i, number) => outputData[i + number*size];\n\n  const currentValues = {\n    bg: valueAt(i, 0),\n    c: valueAt(i, 1),\n    h: valueAt(i, 2),\n    w: valueAt(i, 3),\n  };\n  const values = Object.values(currentValues);\n  const maxIndex = values.indexOf(Math.max(...values));\n\n  resultLayer.push(maxIndex);\n}\n\nconst pixels = [];\nresultLayer.forEach(i => pixels.push(...colormap[i]));\n\ndisplayArrayAsImage(pixels, W, H, display);\n"
             ],
             "outputs": [
                 {
