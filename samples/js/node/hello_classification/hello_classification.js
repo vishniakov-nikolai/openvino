@@ -1,3 +1,4 @@
+const fs = require('node:fs');
 const { addon: ov } = require('openvino-node');
 
 const { cv } = require('opencv-wasm');
@@ -55,28 +56,34 @@ async function main(modelPath, imagePath, deviceName) {
   console.log('Loading the model to the plugin');
   const compiledModel = await core.compileModel(model, deviceName);
 
-  //---------------- Step 6. Create infer request and do inference synchronously
-  console.log('Starting inference in synchronous mode');
+  //---------------- Step 6. Create infer request and do inference asynchronously
   const inferRequest = compiledModel.createInferRequest();
-  inferRequest.setInputTensor(inputTensor);
-  inferRequest.infer();
 
-  //----------------- Step 7. Process output -----------------------------------
-  const outputLayer = compiledModel.outputs[0];
-  const resultInfer = inferRequest.getTensor(outputLayer);
-  const predictions = Array.from(resultInfer.data)
-    .map((prediction, classId) => ({ prediction, classId }))
-    .sort(({ prediction: predictionA }, { prediction: predictionB }) =>
-      predictionA === predictionB ? 0 : predictionA > predictionB ? -1 : 1);
+  console.log('== Start Inference')
+  inferRequest.inferAsync([inputTensor]).then(() => {
+    console.log('== Inference Done')
+    //----------------- Step 7. Process output -----------------------------------
+    const outputLayer = compiledModel.outputs[0];
+    const resultInfer = inferRequest.getTensor(outputLayer);
+    const resultIndex = resultInfer.data.indexOf(Math.max(...resultInfer.data));
 
-  console.log(`Image path: ${imagePath}`);
-  console.log('Top 10 results:');
-  console.log('class_id probability');
-  console.log('--------------------');
-  predictions.slice(0, 10).forEach(({ classId, prediction }) =>
-    console.log(`${classId}\t ${prediction.toFixed(7)}`),
-  );
+    console.log("== Result ==");
+    console.log(`  Index: ${resultIndex}`);
 
-  console.log('\nThis sample is an API example, for any performance '
-    + 'measurements please use the dedicated benchmark_app tool');
+    const imagenetClassesMapContent = fs.readFileSync('../../assets/datasets/imagenet_class_index.json', 'utf-8');
+    const imagenetClassesMap = JSON.parse(imagenetClassesMapContent);
+    const imagenetClasses = ['background', ...Object.values(imagenetClassesMap)];
+
+    console.log(`  Label: ${imagenetClasses[resultIndex][1]}`);
+    console.log("============");
+  });
+
+  for (let i = 0; i < 10; i++) {
+    console.log(`= is alive ${i}`);
+    await sleep(0);
+  }
+}
+
+function sleep(timeoutMs) {
+  return new Promise((res, rej) => setTimeout(() => res(), timeoutMs));
 }
